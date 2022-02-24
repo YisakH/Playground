@@ -13,7 +13,6 @@ chrome_options.add_argument("--disable-dev-shm-usage")
 
 driver = webdriver.Chrome(chrome_options=chrome_options)
 url_3060ti = 'https://quasarzone.com/bbs/qb_tsy?_method=post&type=&page=1&_token=cqlsp6BWdhmOi6ULyUFquj2FLkDsbhDDvbBhF3FU&popularity=&kind=subject%7C%7Ccontent&keyword=3060ti&sort=num%2C+reply&direction=DESC'
-
 url_3070 = 'https://quasarzone.com/bbs/qb_tsy?_method=post&type=&page=1&_token=xw5MYBASLz7MNLQIhUslrgSSK6TTRzjwQiuxomgK&popularity=&kind=subject&keyword=3070&sort=num%2C+reply&direction=DESC'
 
 ip = "192.168.30.15"

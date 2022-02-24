@@ -57,7 +57,7 @@ async def start(ctx):
             await ctx.channel.send(text)
             last+=1
             
-        index_rtx, nono2 = rtx_get_last_notice()
+        index_rtx, nono2 = rtx_get_last_notice("rtx3060ti")
         
         while(rtx_last <= index_rtx):
             text = rtx_get_one(rtx_last)
@@ -66,11 +66,8 @@ async def start(ctx):
         
         time.sleep(20)
         
-def insert_data(data):
+#def check_rtx(gpu_name, rtx_last, ctx):
     
-    sql = "INSERT INTO iphone (text, date) VALUES('" + str(data) + "', '" + str(datetime.now()) +  "')"
-    cur.execute(sql)
-    conn.commit()
     
 def iphone_get_last_notice():
     cur.execute("SELECT num, text FROM iphone ORDER BY num DESC LIMIT 1")
@@ -81,8 +78,8 @@ def iphone_get_last_notice():
         return int(row[0][0]), row[0][1]
     return row, None
 
-def rtx_get_last_notice():
-    cur.execute("SELECT num, text FROM rtx3060ti ORDER BY num DESC LIMIT 1")
+def rtx_get_last_notice(gpu_name):
+    cur.execute("SELECT num, text FROM " + gpu_name + " ORDER BY num DESC LIMIT 1")
 
     row = cur.fetchall()
     
@@ -99,9 +96,9 @@ def get_one(index_num):
         return row[0][0]
     return row
 
-def rtx_get_one(index_num):
+def rtx_get_one(index_num, gpu_name):
     
-    cur.execute("SELECT text FROM rtx3060ti WHERE num=" + str(index_num))
+    cur.execute("SELECT text FROM "+ gpu_name + " WHERE num=" + str(index_num))
     row = cur.fetchall()
     
     if(len(row) > 0):
