@@ -9,13 +9,13 @@ import pymysql
 
 ip = "192.168.30.15"
 port = 1883
-passwd = open("passwd.txt", "r").readline()
+passwd = open("/home/yshong/project/playground/crawling/iphone/passwd.txt", "r").readline()
 
 conn = pymysql.connect(host='192.168.30.15', user='root', password=passwd, db='crwaling', charset='utf8')
 cur = conn.cursor()
 
 
-TOKEN = open("TOKEN.txt", "r").readline()
+TOKEN = open("/home/yshong/project/playground/crawling/iphone/TOKEN.txt", "r").readline()
 CHANNEL_ID = '945540335495426079'
 mychannel = ''
 
@@ -32,10 +32,6 @@ async def on_ready():
 @bot.command()
 async def hello(ctx):
   await ctx.reply('Hi, there!')
-  await ctx.channel.send("hoho")
-  
-  global mychannel
-  mychannel = ctx.channel
 
 # !bye 명령어 처리
 @bot.command()
@@ -46,7 +42,8 @@ async def bye(ctx):
 async def start(ctx):
     print('running msg process...')
     last = 13
-    rtx_last = 1
+    rtx3060ti_last = 1
+    rtx3070_last = 1
     
     while(True):
         
@@ -54,15 +51,29 @@ async def start(ctx):
         
         while(last <= index):
             text = get_one(last)
-            await ctx.channel.send(text)
+            
+            if(text is not None):
+                await ctx.channel.send(text)
             last+=1
+            
             
         index_rtx, nono2 = rtx_get_last_notice("rtx3060ti")
         
-        while(rtx_last <= index_rtx):
-            text = rtx_get_one(rtx_last)
-            await ctx.channel.send(text)
-            rtx_last += 1
+        while(rtx3060ti_last <= index_rtx):
+            text = rtx_get_one(rtx3060ti_last, "rtx3060ti")
+            
+            if(text is not None):
+                await ctx.channel.send(text)
+            rtx3060ti_last += 1
+            
+            
+        index_rtx3070 = rtx_get_last_notice("rtx_3070")
+        
+        while(rtx3070_last <= index_rtx3070):
+            text = rtx_get_one(rtx3070_last, "rtx3060ti")
+            if(text is not None):
+                await ctx.channel.send(text)
+            rtx3070_last += 1
         
         time.sleep(20)
         
@@ -94,7 +105,7 @@ def get_one(index_num):
     
     if(len(row) > 0):
         return row[0][0]
-    return row
+    return None
 
 def rtx_get_one(index_num, gpu_name):
     
@@ -103,6 +114,6 @@ def rtx_get_one(index_num, gpu_name):
     
     if(len(row) > 0):
         return row[0][0]
-    return row
+    return None
     
 bot.run(TOKEN)
