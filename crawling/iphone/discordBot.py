@@ -17,9 +17,16 @@ cur = conn.cursor()
 
 TOKEN = open("/home/yshong/project/playground/crawling/iphone/TOKEN.txt", "r").readline()
 CHANNEL_ID = '945540335495426079'
+global mychannel
 mychannel = ''
 
+client = discord.Client()
 intents = discord.Intents.default()
+
+global last, rtx3060ti_last , rtx3070_last
+last = 13
+rtx3060ti_last = 1
+rtx3070_last = 1
 
 # !로 시작하면 명령어로 인식
 bot = Bot(command_prefix='!', intents=intents)
@@ -31,7 +38,9 @@ async def on_ready():
 # !hello 명령어 처리
 @bot.command()
 async def hello(ctx):
+  global mychannel
   await ctx.reply('Hi, there!')
+  mychannel = ctx.channel
 
 # !bye 명령어 처리
 @bot.command()
@@ -41,43 +50,50 @@ async def bye(ctx):
 @bot.command()
 async def start(ctx):
     print('running msg process...')
-    last = 13
-    rtx3060ti_last = 1
-    rtx3070_last = 1
+
+    bot.loop.create_task(every_twenty_sec(ctx.channel))
+
+
+#@bot.loop(seconds=15)
+async def every_twenty_sec(mychannel):
+    global last, rtx3060ti_last , rtx3070_last
     
-    while(True):
+    if(mychannel is None):
+        print("Channel is None")
+        return
+    
+    
+    print('running msg process...')
         
-        index, nono = iphone_get_last_notice()
+    index, nono = iphone_get_last_notice()
+    
+    while(last <= index):
+        text = get_one(last)
         
-        while(last <= index):
-            text = get_one(last)
-            
-            if(text is not None):
-                await ctx.channel.send(text)
-            last+=1
-            
-            
-        index_rtx, nono2 = rtx_get_last_notice("rtx3060ti")
+        if(text is not None):
+            await mychannel.send(text)
+        last+=1
         
-        while(rtx3060ti_last <= index_rtx):
-            text = rtx_get_one(rtx3060ti_last, "rtx3060ti")
-            
-            if(text is not None):
-                await ctx.channel.send(text)
-            rtx3060ti_last += 1
-            
-            
-        index_rtx3070 = rtx_get_last_notice("rtx_3070")
         
-        while(rtx3070_last <= index_rtx3070):
-            text = rtx_get_one(rtx3070_last, "rtx3060ti")
-            if(text is not None):
-                await ctx.channel.send(text)
-            rtx3070_last += 1
+    index_rtx, nono2 = rtx_get_last_notice("rtx3060ti")
+    
+    while(rtx3060ti_last <= index_rtx):
+        text = rtx_get_one(rtx3060ti_last, "rtx3060ti")
         
-        time.sleep(20)
+        if(text is not None):
+            await mychannel.send(text)
+        rtx3060ti_last += 1
         
-#def check_rtx(gpu_name, rtx_last, ctx):
+        
+    index_rtx3070 = rtx_get_last_notice("rtx3070")
+    
+    while(rtx3070_last <= index_rtx3070):
+        text = rtx_get_one(rtx3070_last, "rtx3060ti")
+        if(text is not None):
+            await mychannel.send(text)
+        rtx3070_last += 1
+    
+    time.sleep(10)
     
     
 def iphone_get_last_notice():

@@ -17,7 +17,7 @@ url_3070 = 'https://quasarzone.com/bbs/qb_tsy?_method=post&type=&page=1&_token=x
 
 ip = "192.168.30.15"
 port = 1883
-passwd = open("./passwd.txt", 'r').readline()
+passwd = open("/home/yshong/project/playground/crawling/rtx/passwd.txt", 'r').readline()
 
 conn = pymysql.connect(host='192.168.30.15', user='root', password=passwd, db='crwaling', charset='utf8')
 cur = conn.cursor()
