@@ -39,29 +39,30 @@ def get_last_notice():
         return value
     return row
 
-for i in range(2):
-    driver.maximize_window()
-    driver.get(url)
+
+driver.maximize_window()
+driver.get(url)
+
+content = driver.page_source.encode('utf-8').strip()
+soup = BeautifulSoup(content,"html.parser")
+titles = soup.find_all('font', class_ = 'list_title')
+
+last = get_last_notice()
+key = int()
+
+for title in titles:
+    if(title.text == "뽐뿌게시판 업자신고 프로세스 개선 안내"):
+        continue
+    if(title.text == last):
+        break
     
-    content = driver.page_source.encode('utf-8').strip()
-    soup = BeautifulSoup(content,"html.parser")
-    titles = soup.find_all('font', class_ = 'list_title')
+    key+=1
+
+for title in reversed(titles[:key]):
+    if(title.text == "뽐뿌게시판 업자신고 프로세스 개선 안내"):
+        continue
     
-    last = get_last_notice()
-    key = int()
-    
-    for title in titles:
-        if(title.text == "뽐뿌게시판 업자신고 프로세스 개선 안내"):
-            continue
-        if(title.text == last):
-            break
-        
-        key+=1
-    
-    for title in reversed(titles[:key]):
-        if(title.text == "뽐뿌게시판 업자신고 프로세스 개선 안내"):
-            continue
-        
-        insert_data(title.text)
-    
-    time.sleep(20)
+    insert_data(title.text)
+
+
+driver.quit()

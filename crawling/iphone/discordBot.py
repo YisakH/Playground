@@ -5,6 +5,7 @@ from discord.ext import tasks
 from discord.ext.commands import Bot
 from datetime import datetime
 import pymysql
+import asyncio
 
 
 ip = "192.168.30.15"
@@ -49,9 +50,9 @@ async def bye(ctx):
   
 @bot.command()
 async def start(ctx):
-    print('running msg process...')
 
     bot.loop.create_task(every_twenty_sec(ctx.channel))
+
 
 
 #@bot.loop(seconds=15)
@@ -62,38 +63,38 @@ async def every_twenty_sec(mychannel):
         print("Channel is None")
         return
     
-    
-    print('running msg process...')
+    while True:
+        print('running msg process...')
+            
+        index = iphone_get_last_notice()
         
-    index, nono = iphone_get_last_notice()
-    
-    while(last <= index):
-        text = get_one(last)
+        while(last <= index):
+            text = get_one(last)
+            
+            if(text is not None):
+                await mychannel.send(text)
+            last+=1
+            
+            
+        index_rtx = rtx_get_last_notice("rtx3060ti")
         
-        if(text is not None):
-            await mychannel.send(text)
-        last+=1
+        while(rtx3060ti_last <= index_rtx):
+            text = rtx_get_one(rtx3060ti_last, "rtx3060ti")
+            
+            if(text is not None):
+                await mychannel.send(text)
+            rtx3060ti_last += 1
+            
+            
+        index_rtx3070 = rtx_get_last_notice("rtx3070")
         
+        while(rtx3070_last <= index_rtx3070):
+            text = rtx_get_one(rtx3070_last, "rtx3070")
+            if(text is not None):
+                await mychannel.send(text)
+            rtx3070_last += 1
         
-    index_rtx, nono2 = rtx_get_last_notice("rtx3060ti")
-    
-    while(rtx3060ti_last <= index_rtx):
-        text = rtx_get_one(rtx3060ti_last, "rtx3060ti")
-        
-        if(text is not None):
-            await mychannel.send(text)
-        rtx3060ti_last += 1
-        
-        
-    index_rtx3070 = rtx_get_last_notice("rtx3070")
-    
-    while(rtx3070_last <= index_rtx3070):
-        text = rtx_get_one(rtx3070_last, "rtx3060ti")
-        if(text is not None):
-            await mychannel.send(text)
-        rtx3070_last += 1
-    
-    time.sleep(10)
+        await asyncio.sleep(10)        
     
     
 def iphone_get_last_notice():
@@ -102,8 +103,8 @@ def iphone_get_last_notice():
     row = cur.fetchall()
     
     if(len(row) > 0):
-        return int(row[0][0]), row[0][1]
-    return row, None
+        return int(row[0][0])
+    return 0
 
 def rtx_get_last_notice(gpu_name):
     cur.execute("SELECT num, text FROM " + gpu_name + " ORDER BY num DESC LIMIT 1")
@@ -111,8 +112,8 @@ def rtx_get_last_notice(gpu_name):
     row = cur.fetchall()
     
     if(len(row) > 0):
-        return int(row[0][0]), row[0][1]
-    return row, None
+        return int(row[0][0])
+    return 0
 
 def get_one(index_num):
     
